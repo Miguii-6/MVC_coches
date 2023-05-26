@@ -1,6 +1,8 @@
 import java.util.ArrayList;
+import java.util.Observable;
 
-public class Model {
+public class Model extends Observable {
+
     static ArrayList<Coche> parking = new ArrayList<>();
 
     /**
@@ -16,10 +18,21 @@ public class Model {
     }
 
     /**
-     * Busca coche segun matricula
-     * @param matricula a buscar
-     * @return chche o null si no existe
+     * @param matricula
+     * @param v nueva velocidad
+     * @return velocidad modificada
      */
+    public Integer cambiarVelocidad(String matricula, Integer v) {
+        // busca el coche
+        getCoche(matricula).velocidad = v;
+        // retorna la nueva velocidad
+        return getCoche(matricula).velocidad;
+        /**
+         * Busca coche segun matricula
+         * @param matricula a buscar
+         * @return chche o null si no existe
+         */
+    }
     public Coche getCoche(String matricula){
         Coche aux = null;
         // recorre el array buscando por matricula
@@ -31,25 +44,50 @@ public class Model {
         return aux;
     }
 
-    /**
-     *
-     * @param matricula
-     * @param v nueva velocidad
-     * @return velocidad modificada
-     */
-    public Integer cambiarVelocidad(String matricula, Integer v) {
-        // busca el coche
-        getCoche(matricula).velocidad = v;
-        // retorna la nueva velocidad
-        return getCoche(matricula).velocidad;
-    }
 
     /**
      * Ddevuelve la velocidad segun la matricula
      * @param matricula
      * @return
      */
+
     public Integer getVelocidad(String matricula) {
         return getCoche(matricula).velocidad;
     }
+
+    //Empezo ca tarea
+    /**
+     * Sube la velocidad del coche y notifica al observer ç
+     * @param matricula -> matricula del coche a subir velocidad
+     */
+
+    public Integer subirVelocidad(String matricula) {
+        Coche coche = getCoche(matricula);
+        if (coche != null) {
+            coche.velocidad += 40; // Aumenta a velocidad en 40
+            setChanged();
+            notifyObservers(coche);
+            return coche.velocidad;
+        }
+        return null; // Retorna null si o coche non existe
+    }
+
+    /**
+     * Baja la velocidad del coche y notifica al observer ç
+     * @param matricula -> matricula del coche a subir velocidad
+     */
+
+    public Integer bajarVelocidad(String matricula){
+        Coche coche = getCoche(matricula);
+        if (coche != null) {
+            coche.velocidad -= 40; // Disminue a velocidad en 40
+            setChanged();
+            notifyObservers(coche);
+            return coche.velocidad;
+        }
+        return null; // Retorna null si o coche non existe
+    }
+
+
+
 }
