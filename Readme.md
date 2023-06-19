@@ -14,58 +14,89 @@ classDiagram
     }
       class Controller{
           +main()
+          +crearCoche(String, String)
+          +subirVelocidad(String)
+          +bajarVelocidad(String)
+          +buscarCoche(String)
       }
-      class View {+muestraVelocidad(String, Integer)}
+      class View {
+      +muestraVelocidad(String, Integer)
+      +mostrarCoche(String, String, Integer)
+      }
       class Model {
           ArrayList~Coche~: parking
           +crearCoche(String, String, String)
           +getCoche(String)
           +cambiarVelocidad(String, Integer)
           +getVelocidad(String)
+          +subirVelocidad(String, Integer)
+          +bajarVelocidad(String, Integer)
       }
+      
+      class IU { mostrarVentana()}
+      
+      class Dialog { mostrarVelocidad() }
     Controller "1" *-- "1" Model : association
     Controller "1" *-- "1" View : association
     Model "1" *-- "1..n" Coche : association
-      
+    View "1" *-- "1" IU : association
+    View "1" *-- "1" Dialog : association
 ```
 
 ---
 
-## Diagrama de Secuencia
+## Evento en el View
 
-Ejemplo básico del procedimiento, sin utilizar los nombres de los métodos
+Cuando ocurre un evento en la vista, el `controller` se tiene que enterar.
+Tenemos que tener en cuenta que en el MVC estricto, la vista no se comunica con el modelo.
 
+En el listener del botón llamamos al `controller`
 
-```mermaid
-sequenceDiagram
-    participant Model
-    participant Controller
-    participant View
-    Controller->>Model: Puedes crear un coche?
-    activate Model
-    Model-->>Controller: Creado!
-    deactivate Model
-    Controller->>+View: Muestra la velocidad, porfa
-    activate View
-    View->>-View: Mostrando velocidad
-    View-->>Controller: Listo!
-    deactivate View
-```
-
-El mismo diagrama con los nombres de los métodos
 
 ```mermaid
 sequenceDiagram
-    participant Model
-    participant Controller
+    actor usuario
     participant View
-    Controller->>Model: crearCoche("Mercedes", "BXK 1234")
+    participant Controller
+    participant Model
+    
+    usuario->>View: click! Crear coche
+    View->>Controller: el usuario quiere crear un coche
+    activate Controller
+    Controller->>Model: crea un coche, porfa
     activate Model
     Model-->>Controller: Coche
     deactivate Model
-    Controller->>+View: muestraVelocidad("BXK 1234", velocidad)
-    activate View
-    View->>-View: System.out.println()
-    View-->>Controller: boolean
-    deactivate View
+    Controller->>View: ok, coche creado!
+    deactivate Controller
+    View-->>usuario: tu coche se creó!
 ```
+
+Ahora la parte de la Arquitectura de la vista, son tres clases
+```mermaid
+sequenceDiagram
+    autonumber
+    actor usuario
+    box gray Vista con JFrame
+        participant IU
+        participant Dialog
+        participant View
+        end
+        
+    participant Controller
+    participant Model
+
+    usuario->>IU: click! Crear coche
+    IU->>Controller: crearCoche()
+    activate Controller
+    Controller->>Model: crearCoche
+    activate Model
+    Model-->>Controller: Coche
+    deactivate Model
+    Controller->>+View: mostrarVelocidad
+    deactivate Controller
+    View-->>-Dialog: mostrarVelocidad()
+```
+
+Para cerrar unha breve explicacion, no controller crei o metodo BuscarCoche, e na View o metodo mostrar  coche, tal e como din 
+o nombre do metodo fan o que din.
